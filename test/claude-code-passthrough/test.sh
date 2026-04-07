@@ -13,6 +13,8 @@ source dev-container-features-test-lib
 check "claude is on PATH"            bash -c "command -v claude"
 check "claude --version runs"        bash -c "claude --version"
 check "link helper is staged"        test -x /usr/local/share/claude-code-passthrough/link-credentials.sh
+check "options.env is staged"        test -e /usr/local/share/claude-code-passthrough/options.env
 check "credentials staging exists"   test -e /usr/local/share/claude-code-passthrough/.credentials.json
+check "account state staging exists" test -e /usr/local/share/claude-code-passthrough/.claude.json
 
 reportResults
