@@ -2,11 +2,10 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2026 Tim Cane
 #
-# Smoke test for the claude-code-passthrough feature.
+# Scenario: defaults — feature with no options set.
 
 set -e
 
-# Optional: import test helpers from the dev container CLI test runner.
 # shellcheck source=/dev/null
 source dev-container-features-test-lib
 
