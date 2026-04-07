@@ -1,0 +1,45 @@
+{
+	"id": "claude-code-passthrough",
+	"version": "0.1.0",
+	"name": "Claude Code (with host credential passthrough)",
+	"description": "Installs Anthropic's Claude Code CLI and bind-mounts the host's ~/.claude/.credentials.json into the container so you don't have to re-authenticate.",
+	"documentationURL": "https://github.com/timcane/devcontainer-features/tree/main/src/claude-code-passthrough",
+	"licenseURL": "https://github.com/timcane/devcontainer-features/blob/main/LICENSE",
+	"keywords": [
+		"claude",
+		"claude-code",
+		"anthropic",
+		"ai",
+		"llm"
+	],
+	"options": {
+		"version": {
+			"type": "string",
+			"default": "latest",
+			"description": "Version of @anthropic-ai/claude-code to install from npm (e.g. 'latest', '1.2.3')."
+		},
+		"nodeVersion": {
+			"type": "string",
+			"default": "lts",
+			"description": "Informational only. The node feature dependency is pinned to 'lts'; to override, add ghcr.io/devcontainers/features/node yourself with the desired version."
+		},
+		"mountCredentials": {
+			"type": "boolean",
+			"default": true,
+			"description": "If true, symlink the bind-mounted host credentials into $HOME/.claude/.credentials.json on container start. Note: the bind mount itself is always declared by this feature; this option only controls whether the symlink is created."
+		}
+	},
+	"dependsOn": {
+		"ghcr.io/devcontainers/features/node:1": {
+			"version": "lts"
+		}
+	},
+	"mounts": [
+		{
+			"type": "bind",
+			"source": "${localEnv:HOME}/.claude/.credentials.json",
+			"target": "/usr/local/share/claude-code-passthrough/.credentials.json"
+		}
+	],
+	"postCreateCommand": "/usr/local/share/claude-code-passthrough/link-credentials.sh"
+}

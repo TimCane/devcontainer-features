@@ -1,0 +1,24 @@
+{
+	"defaults": {
+		"image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+		"features": {
+			"claude-code-passthrough": {}
+		}
+	},
+	"pinned-version": {
+		"image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+		"features": {
+			"claude-code-passthrough": {
+				"version": "latest"
+			}
+		}
+	},
+	"no-mount": {
+		"image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+		"features": {
+			"claude-code-passthrough": {
+				"mountCredentials": false
+			}
+		}
+	}
+}
