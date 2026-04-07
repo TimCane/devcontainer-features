@@ -13,11 +13,11 @@
 			}
 		}
 	},
-	"no-mount": {
+	"no-passthrough": {
 		"image": "mcr.microsoft.com/devcontainers/base:ubuntu",
 		"features": {
 			"claude-code-passthrough": {
-				"mountCredentials": false
+				"passthroughHostAuth": false
 			}
 		}
 	}
