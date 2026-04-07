@@ -22,8 +22,8 @@ jobs:
       - name: "Install devcontainer CLI"
         run: npm install -g @devcontainers/cli
 
-      - name: "Seed dummy host credentials for bind mount"
-        run: mkdir -p ~/.claude && touch ~/.claude/.credentials.json
+      - name: "Seed dummy host files for bind mounts"
+        run: mkdir -p ~/.claude && touch ~/.claude/.credentials.json ~/.claude.json
 
       - name: "Test ${{ matrix.feature }}"
         run: devcontainer features test --features ${{ matrix.feature }} --base-image mcr.microsoft.com/devcontainers/base:ubuntu .
