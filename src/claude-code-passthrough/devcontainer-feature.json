@@ -1,6 +1,6 @@
 {
 	"id": "claude-code-passthrough",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"name": "Claude Code (with host credential passthrough)",
 	"description": "Installs Anthropic's Claude Code CLI and bind-mounts the host's ~/.claude/.credentials.json into the container so you don't have to re-authenticate.",
 	"documentationURL": "https://github.com/timcane/devcontainer-features/tree/main/src/claude-code-passthrough",
@@ -37,12 +37,12 @@
 	"mounts": [
 		{
 			"type": "bind",
-			"source": "${localEnv:HOME}/.claude/.credentials.json",
+			"source": "${localEnv:HOME}${localEnv:USERPROFILE}/.claude/.credentials.json",
 			"target": "/usr/local/share/claude-code-passthrough/.credentials.json"
 		},
 		{
 			"type": "bind",
-			"source": "${localEnv:HOME}/.claude.json",
+			"source": "${localEnv:HOME}${localEnv:USERPROFILE}/.claude.json",
 			"target": "/usr/local/share/claude-code-passthrough/.claude.json"
 		}
 	],
