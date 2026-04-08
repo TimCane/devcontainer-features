@@ -70,7 +70,9 @@ shim_local_bin_launcher() {
 		install -d -m 0755 -o "${REMOTE_USER}" -g "${REMOTE_USER}" "${REMOTE_USER_HOME}/.local"
 		install -d -m 0755 -o "${REMOTE_USER}" -g "${REMOTE_USER}" "${local_bin}"
 		ln -sfn "${npm_claude}" "${local_bin}/claude"
-		chown -h "${REMOTE_USER}:${REMOTE_USER}" "${local_bin}/claude" || true
+		if ! chown -h "${REMOTE_USER}:${REMOTE_USER}" "${local_bin}/claude"; then
+			err "WARNING: failed to chown ${local_bin}/claude to ${REMOTE_USER} — symlink ownership may be wrong."
+		fi
 	else
 		install -d -m 0755 "${local_bin}"
 		ln -sfn "${npm_claude}" "${local_bin}/claude"
