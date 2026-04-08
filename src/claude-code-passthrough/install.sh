@@ -2,56 +2,99 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2026 Tim Cane
 #
-# claude-code-passthrough feature installer.
-#
-# Installs the Claude Code CLI from npm and stages a postCreate helper that
-# symlinks the bind-mounted host credentials file into the remote user's
-# $HOME/.claude/ at container start time.
-#
-# Runs as root at image build time. The bind mount is NOT live yet at this
-# point — we cannot touch /usr/local/share/claude-code/.credentials.json here.
+# Installs Claude Code from npm and stages a postCreate helper that wires
+# up the host credential bind mounts at container start. Runs as root at
+# image build time, before the bind mounts are live.
 
 set -euo pipefail
 
 VERSION="${VERSION:-latest}"
 PASSTHROUGHHOSTAUTH="${PASSTHROUGHHOSTAUTH:-true}"
-
 REMOTE_USER="${_REMOTE_USER:-root}"
 REMOTE_USER_HOME="${_REMOTE_USER_HOME:-/root}"
 
-echo "[claude-code-passthrough] installing @anthropic-ai/claude-code@${VERSION}"
-
-if ! command -v npm >/dev/null 2>&1; then
-	echo "[claude-code-passthrough] ERROR: npm not found on PATH." >&2
-	echo "[claude-code-passthrough] This feature dependsOn ghcr.io/devcontainers/features/node — node should have been installed first." >&2
-	exit 1
-fi
-
-npm install -g "@anthropic-ai/claude-code@${VERSION}"
-
-# Stage the postCreate helper next to the mount target so it ships with the
-# image. The mount target file itself doesn't exist until run time; the
-# staging directory does.
 STAGING_DIR="/usr/local/share/claude-code-passthrough"
-install -d -m 0755 "${STAGING_DIR}"
-
-# Ship the helper script verbatim from the feature directory (keeps it in its
-# own file so editors syntax-highlight it properly).
 SELF_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-install -m 0755 "${SELF_DIR}/scripts/link-credentials.sh" "${STAGING_DIR}/link-credentials.sh"
 
-# Bake option values into an env file the helper sources at run time.
-# postCreateCommand does not run as a login shell, so /etc/profile.d/* is
-# not sourced — this env file is how feature options cross that boundary.
-cat >"${STAGING_DIR}/options.env" <<EOF
+log() { echo "[claude-code-passthrough] $*"; }
+err() { echo "[claude-code-passthrough] $*" >&2; }
+
+remote_user_exists() {
+	[ "${REMOTE_USER}" != "root" ] && id "${REMOTE_USER}" >/dev/null 2>&1
+}
+
+require_npm() {
+	if ! command -v npm >/dev/null 2>&1; then
+		err "ERROR: npm not found on PATH."
+		err "This feature dependsOn ghcr.io/devcontainers/features/node — node should have been installed first."
+		exit 1
+	fi
+}
+
+install_claude_code() {
+	log "installing @anthropic-ai/claude-code@${VERSION}"
+	npm install -g "@anthropic-ai/claude-code@${VERSION}"
+}
+
+# Shim ~/.local/bin/claude → npm binary. Claude's npm build auto-migrates
+# to the native installer in the background; per anthropics/claude-code#26173
+# the migration sets installMethod="native" but fails to create the launcher,
+# leaving warnings on every start. Pointing the expected path at the npm
+# binary silences the self-check without disabling auto-updates — a future
+# successful migration will overwrite this symlink with a real binary.
+shim_local_bin_launcher() {
+	local npm_claude
+	npm_claude="$(command -v claude || true)"
+	if [ -z "${npm_claude}" ]; then
+		return
+	fi
+
+	local local_bin="${REMOTE_USER_HOME}/.local/bin"
+
+	if remote_user_exists; then
+		install -d -m 0755 -o "${REMOTE_USER}" -g "${REMOTE_USER}" "${REMOTE_USER_HOME}/.local"
+		install -d -m 0755 -o "${REMOTE_USER}" -g "${REMOTE_USER}" "${local_bin}"
+		ln -sfn "${npm_claude}" "${local_bin}/claude"
+		chown -h "${REMOTE_USER}:${REMOTE_USER}" "${local_bin}/claude" || true
+	else
+		install -d -m 0755 "${local_bin}"
+		ln -sfn "${npm_claude}" "${local_bin}/claude"
+	fi
+
+	log "linked ${local_bin}/claude -> ${npm_claude}"
+}
+
+# Stage the postCreate helper next to the bind-mount targets. The target
+# files don't exist until run time, but the staging dir does.
+stage_helper_script() {
+	install -d -m 0755 "${STAGING_DIR}"
+	install -m 0755 "${SELF_DIR}/scripts/link-credentials.sh" "${STAGING_DIR}/link-credentials.sh"
+}
+
+# Bake option values into an env file. postCreateCommand isn't a login shell,
+# so /etc/profile.d/* won't fire — this is how options cross that boundary.
+write_options_env() {
+	cat >"${STAGING_DIR}/options.env" <<EOF
 PASSTHROUGH_HOST_AUTH="${PASSTHROUGHHOSTAUTH}"
 EOF
-chmod 0644 "${STAGING_DIR}/options.env"
+	chmod 0644 "${STAGING_DIR}/options.env"
+}
 
-# Ensure the remote user owns its (future) ~/.claude directory's parent;
-# the directory itself is created at run time by the helper.
-if [ "${REMOTE_USER}" != "root" ] && id "${REMOTE_USER}" >/dev/null 2>&1; then
-	install -d -m 0755 -o "${REMOTE_USER}" -g "${REMOTE_USER}" "${REMOTE_USER_HOME}/.claude" || true
-fi
+# Pre-create ~/.claude so the helper doesn't have to mkdir as the remote user.
+prepare_claude_home() {
+	if remote_user_exists; then
+		install -d -m 0755 -o "${REMOTE_USER}" -g "${REMOTE_USER}" "${REMOTE_USER_HOME}/.claude" || true
+	fi
+}
 
-echo "[claude-code-passthrough] install complete."
+main() {
+	require_npm
+	install_claude_code
+	shim_local_bin_launcher
+	stage_helper_script
+	write_options_env
+	prepare_claude_home
+	log "install complete."
+}
+
+main "$@"
