@@ -31,6 +31,21 @@ require_npm() {
 	fi
 }
 
+validate_version() {
+	# Accept "latest", a semver-ish version (1.2.3, 1.2.3-beta.1, with optional
+	# leading 'v'), or a dist-tag (alphanumerics, dots, dashes, underscores).
+	# Reject anything that could smuggle shell metacharacters into the npm
+	# install argument.
+	case "${VERSION}" in
+		latest) return 0 ;;
+	esac
+	if ! [[ "${VERSION}" =~ ^[A-Za-z0-9._-]+$ ]]; then
+		err "ERROR: invalid version '${VERSION}'."
+		err "Expected 'latest', a semver (e.g. 1.2.3), or a dist-tag matching [A-Za-z0-9._-]+."
+		exit 1
+	fi
+}
+
 install_claude_code() {
 	log "installing @anthropic-ai/claude-code@${VERSION}"
 	npm install -g "@anthropic-ai/claude-code@${VERSION}"
@@ -88,6 +103,7 @@ prepare_claude_home() {
 }
 
 main() {
+	validate_version
 	require_npm
 	install_claude_code
 	shim_local_bin_launcher
