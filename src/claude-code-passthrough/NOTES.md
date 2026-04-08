@@ -67,6 +67,39 @@ background. This feature pre-creates a shim at `~/.local/bin/claude`
 pointing at the npm binary so the self-check stays quiet until the
 real native launcher arrives. No action needed.
 
+## Uninstalling / cleanup
+
+Dev container features bake into image layers, so there is no in-place
+"uninstall" — removal happens at the `devcontainer.json` level and the
+container is rebuilt clean.
+
+1. **Remove the feature entry** from `devcontainer.json`:
+   ```json
+   "features": {
+     "ghcr.io/TimCane/devcontainer-features/claude-code-passthrough:0": {}
+   }
+   ```
+   Delete that line. If you also want to drop the Node feature this one
+   pulled in via `dependsOn`, remove your own explicit `node` entry too.
+
+2. **Rebuild the container** (Dev Containers: Rebuild Container). The new
+   image will not contain `@anthropic-ai/claude-code`, the `/opt/claude-code-passthrough/`
+   staging dir, the `~/.local/bin/claude` shim, or the bind mounts.
+
+3. **Host side** is untouched — `~/.claude/.credentials.json` and
+   `~/.claude.json` belong to the host's Claude Code install and remain
+   exactly as they were. To remove host-side state, run `claude logout`
+   on the host (or delete those two files manually).
+
+4. **Container-local `~/.claude.json`** lived inside the container and
+   goes away with the rebuild. It was a copy, never linked back, so
+   nothing is left behind on the host.
+
+If you only want to disable passthrough without uninstalling, set
+`"passthroughHostAuth": false` instead — the bind mounts stay declared
+(features can't opt out of their own mounts) but the helper skips the
+symlink and seed.
+
 ### Windows hosts
 
 The bind-mount sources resolve `${localEnv:HOME}` with a fallback to
