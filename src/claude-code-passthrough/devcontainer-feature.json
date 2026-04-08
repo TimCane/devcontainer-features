@@ -1,6 +1,6 @@
 {
 	"id": "claude-code-passthrough",
-	"version": "0.3.0",
+	"version": "0.4.0",
 	"name": "Claude Code (with host credential passthrough)",
 	"description": "Installs Anthropic's Claude Code CLI and bind-mounts the host's ~/.claude/.credentials.json into the container so you don't have to re-authenticate.",
 	"documentationURL": "https://github.com/timcane/devcontainer-features/tree/main/src/claude-code-passthrough",
@@ -26,7 +26,7 @@
 		"passthroughHostAuth": {
 			"type": "boolean",
 			"default": true,
-			"description": "If true, pass the host's Claude Code authentication into the container on first start: symlink ~/.claude/.credentials.json (so token refreshes write back to the host) AND copy ~/.claude.json (account/onboarding state, copied not linked because Claude Code rewrites it constantly and live-linking would pollute the host). Both halves are needed together — credentials alone leaves Claude re-running onboarding, and account state alone leaves it unauthenticated — so this is a single switch. The bind mounts themselves are always declared by this feature; this option only controls whether the link/copy happens at postCreate."
+			"description": "If true, wire the host's Claude Code auth into the container at postCreate: symlink ~/.claude/.credentials.json (so token refreshes flow back to the host) and copy ~/.claude.json (account/onboarding state — copied, not linked, because Claude rewrites it constantly with container-local paths). Both halves are needed together; either alone leaves Claude broken. The bind mounts are always declared; this flag only controls whether link/copy runs."
 		}
 	},
 	"dependsOn": {
