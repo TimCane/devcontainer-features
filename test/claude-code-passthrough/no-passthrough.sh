@@ -6,7 +6,7 @@
 # are still declared (features cannot opt out of their own mounts), but
 # the helper should skip the symlink and account state copy.
 
-set -e
+set -euo pipefail
 
 # shellcheck source=/dev/null
 source dev-container-features-test-lib

@@ -4,7 +4,7 @@
 #
 # Smoke test for the claude-code-passthrough feature.
 
-set -e
+set -euo pipefail
 
 # Optional: import test helpers from the dev container CLI test runner.
 # shellcheck source=/dev/null

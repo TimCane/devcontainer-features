@@ -4,7 +4,7 @@
 #
 # Scenario: pinned-version — feature with an explicit version option.
 
-set -e
+set -euo pipefail
 
 # shellcheck source=/dev/null
 source dev-container-features-test-lib
