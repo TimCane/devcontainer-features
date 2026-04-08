@@ -13,7 +13,7 @@
 		"llm"
 	],
 	"options": {
-		"version": {
+		"claudeVersion": {
 			"type": "string",
 			"default": "latest",
 			"description": "Version of @anthropic-ai/claude-code to install from npm (e.g. 'latest', '1.2.3')."

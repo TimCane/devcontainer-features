@@ -15,7 +15,7 @@ Installs Anthropic's Claude Code CLI and bind-mounts the host's ~/.claude/.crede
 
 | Options Id | Description | Type | Default Value |
 |-----|-----|-----|-----|
-| version | Version of @anthropic-ai/claude-code to install from npm (e.g. 'latest', '1.2.3'). | string | latest |
+| claudeVersion | Version of @anthropic-ai/claude-code to install from npm (e.g. 'latest', '1.2.3'). | string | latest |
 | nodeVersion | Informational only. The node feature dependency is pinned to 'lts'; to override, add ghcr.io/devcontainers/features/node yourself with the desired version. | string | lts |
 | passthroughHostAuth | If true, wire the host's Claude Code auth into the container at postCreate: symlink ~/.claude/.credentials.json (so token refreshes flow back to the host) and copy ~/.claude.json (account/onboarding state — copied, not linked, because Claude rewrites it constantly with container-local paths). Both halves are needed together; either alone leaves Claude broken. The bind mounts are always declared; this flag only controls whether link/copy runs. | boolean | true |
 

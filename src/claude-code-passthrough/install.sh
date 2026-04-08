@@ -8,7 +8,7 @@
 
 set -euo pipefail
 
-VERSION="${VERSION:-latest}"
+CLAUDE_VERSION="${CLAUDEVERSION:-latest}"
 PASSTHROUGHHOSTAUTH="${PASSTHROUGHHOSTAUTH:-true}"
 REMOTE_USER="${_REMOTE_USER:-root}"
 REMOTE_USER_HOME="${_REMOTE_USER_HOME:-/root}"
@@ -36,19 +36,19 @@ validate_version() {
 	# leading 'v'), or a dist-tag (alphanumerics, dots, dashes, underscores).
 	# Reject anything that could smuggle shell metacharacters into the npm
 	# install argument.
-	case "${VERSION}" in
+	case "${CLAUDE_VERSION}" in
 		latest) return 0 ;;
 	esac
-	if ! [[ "${VERSION}" =~ ^[A-Za-z0-9._-]+$ ]]; then
-		err "ERROR: invalid version '${VERSION}'."
+	if ! [[ "${CLAUDE_VERSION}" =~ ^[A-Za-z0-9._-]+$ ]]; then
+		err "ERROR: invalid claudeVersion '${CLAUDE_VERSION}'."
 		err "Expected 'latest', a semver (e.g. 1.2.3), or a dist-tag matching [A-Za-z0-9._-]+."
 		exit 1
 	fi
 }
 
 install_claude_code() {
-	log "installing @anthropic-ai/claude-code@${VERSION}"
-	npm install -g "@anthropic-ai/claude-code@${VERSION}"
+	log "installing @anthropic-ai/claude-code@${CLAUDE_VERSION}"
+	npm install -g "@anthropic-ai/claude-code@${CLAUDE_VERSION}"
 }
 
 # Shim ~/.local/bin/claude → npm binary. Claude's npm build auto-migrates

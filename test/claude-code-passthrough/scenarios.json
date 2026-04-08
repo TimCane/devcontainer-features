@@ -9,7 +9,7 @@
 		"image": "mcr.microsoft.com/devcontainers/base:ubuntu",
 		"features": {
 			"claude-code-passthrough": {
-				"version": "latest"
+				"claudeVersion": "latest"
 			}
 		}
 	},
