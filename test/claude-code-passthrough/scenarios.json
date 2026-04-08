@@ -26,5 +26,11 @@
 		"features": {
 			"claude-code-passthrough": {}
 		}
+	},
+	"collisions": {
+		"image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+		"features": {
+			"claude-code-passthrough": {}
+		}
 	}
 }
