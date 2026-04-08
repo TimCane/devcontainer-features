@@ -33,13 +33,13 @@
 		{
 			"type": "bind",
 			"source": "${localEnv:HOME}${localEnv:USERPROFILE}/.claude/.credentials.json",
-			"target": "/usr/local/share/claude-code-passthrough/.credentials.json"
+			"target": "/opt/claude-code-passthrough/.credentials.json"
 		},
 		{
 			"type": "bind",
 			"source": "${localEnv:HOME}${localEnv:USERPROFILE}/.claude.json",
-			"target": "/usr/local/share/claude-code-passthrough/.claude.json"
+			"target": "/opt/claude-code-passthrough/.claude.json"
 		}
 	],
-	"postCreateCommand": "/usr/local/share/claude-code-passthrough/link-credentials.sh"
+	"postCreateCommand": "/opt/claude-code-passthrough/link-credentials.sh"
 }

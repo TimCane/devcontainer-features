@@ -17,14 +17,14 @@ set -euo pipefail
 # shellcheck source=/dev/null
 source dev-container-features-test-lib
 
-HELPER="/usr/local/share/claude-code-passthrough/link-credentials.sh"
+HELPER="/opt/claude-code-passthrough/link-credentials.sh"
 
 run_helper_with_staging() {
 	local staging_dir="$1" mode="$2"
 	# Synthesize a staging dir with only options.env, then optionally
 	# create the credentials/account paths in the requested shape.
 	mkdir -p "${staging_dir}"
-	cp /usr/local/share/claude-code-passthrough/options.env "${staging_dir}/options.env"
+	cp /opt/claude-code-passthrough/options.env "${staging_dir}/options.env"
 
 	case "${mode}" in
 		absent) ;;  # leave both paths missing

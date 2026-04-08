@@ -13,7 +13,7 @@ PASSTHROUGHHOSTAUTH="${PASSTHROUGHHOSTAUTH:-true}"
 REMOTE_USER="${_REMOTE_USER:-root}"
 REMOTE_USER_HOME="${_REMOTE_USER_HOME:-/root}"
 
-STAGING_DIR="/usr/local/share/claude-code-passthrough"
+STAGING_DIR="/opt/claude-code-passthrough"
 SELF_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 log() { echo "[claude-code-passthrough] $*"; }
