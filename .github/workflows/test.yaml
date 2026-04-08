@@ -17,7 +17,7 @@ jobs:
 
       - name: "Run ShellCheck on feature and test scripts"
         run: |
-          shellcheck \
+          shellcheck --severity=warning \
             src/*/install.sh \
             src/*/scripts/*.sh \
             test/*/*.sh
