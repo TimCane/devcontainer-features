@@ -19,6 +19,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: "Lint mount sources for cross-platform HOME expansion"
+        run: test/${{ matrix.feature }}/lint-mounts.sh
+
       - name: "Install devcontainer CLI"
         run: npm install -g @devcontainers/cli
 
