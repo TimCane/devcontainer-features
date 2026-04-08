@@ -21,7 +21,25 @@ the link/copy step at `postCreate`.
   and `~/.claude.json` exist as files. If they don't exist, Docker will
   silently create empty directories at the bind-mount source and Claude
   will fail to start in the container.
-- This feature `dependsOn` the official `node` feature.
+- This feature `dependsOn` the official `node` feature (pinned to `lts`).
+
+## Customizing the Node version
+
+The `dependsOn` entry on `ghcr.io/devcontainers/features/node` is pinned
+to `lts` and cannot be parameterized — the devcontainer spec evaluates
+`dependsOn` statically, before feature options are bound, so this
+feature has no way to forward an option value into it.
+
+To use a different Node version, declare the node feature yourself in
+your `devcontainer.json` alongside this one. Your declaration satisfies
+the `dependsOn` and wins:
+
+```json
+"features": {
+    "ghcr.io/devcontainers/features/node:1": { "version": "20" },
+    "ghcr.io/TimCane/devcontainer-features/claude-code-passthrough:0": {}
+}
+```
 
 ## Troubleshooting
 

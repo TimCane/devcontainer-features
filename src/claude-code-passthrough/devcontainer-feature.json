@@ -18,11 +18,6 @@
 			"default": "latest",
 			"description": "Version of @anthropic-ai/claude-code to install from npm (e.g. 'latest', '1.2.3')."
 		},
-		"nodeVersion": {
-			"type": "string",
-			"default": "lts",
-			"description": "Informational only. The node feature dependency is pinned to 'lts'; to override, add ghcr.io/devcontainers/features/node yourself with the desired version."
-		},
 		"passthroughHostAuth": {
 			"type": "boolean",
 			"default": true,
