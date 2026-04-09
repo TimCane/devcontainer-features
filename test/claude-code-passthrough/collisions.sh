@@ -44,6 +44,7 @@ run_helper() {
 check "helper replaces a pre-existing regular file with the symlink" \
 	bash -c '
 		set -e
+		HELPER="/opt/claude-code-passthrough/link-credentials.sh"
 		tmp="$(mktemp -d)"
 		trap "chmod -R u+rwX \"${tmp}\" 2>/dev/null; rm -rf \"${tmp}\"" EXIT
 		'"$(declare -f prepare_staging run_helper)"'
@@ -57,6 +58,7 @@ check "helper replaces a pre-existing regular file with the symlink" \
 check "helper replaces a stale symlink pointing elsewhere" \
 	bash -c '
 		set -e
+		HELPER="/opt/claude-code-passthrough/link-credentials.sh"
 		tmp="$(mktemp -d)"
 		trap "chmod -R u+rwX \"${tmp}\" 2>/dev/null; rm -rf \"${tmp}\"" EXIT
 		'"$(declare -f prepare_staging run_helper)"'
@@ -69,6 +71,7 @@ check "helper replaces a stale symlink pointing elsewhere" \
 check "helper preserves a pre-existing ~/.claude.json (container-local state)" \
 	bash -c '
 		set -e
+		HELPER="/opt/claude-code-passthrough/link-credentials.sh"
 		tmp="$(mktemp -d)"
 		trap "chmod -R u+rwX \"${tmp}\" 2>/dev/null; rm -rf \"${tmp}\"" EXIT
 		'"$(declare -f prepare_staging run_helper)"'
@@ -83,6 +86,7 @@ check "helper preserves a pre-existing ~/.claude.json (container-local state)" \
 check "helper fails loudly when ~/.claude is read-only" \
 	bash -c '
 		set -e
+		HELPER="/opt/claude-code-passthrough/link-credentials.sh"
 		tmp="$(mktemp -d)"
 		trap "chmod -R u+rwX \"${tmp}\" 2>/dev/null; rm -rf \"${tmp}\"" EXIT
 		'"$(declare -f prepare_staging run_helper)"'

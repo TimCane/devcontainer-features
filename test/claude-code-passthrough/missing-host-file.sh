@@ -43,6 +43,7 @@ run_helper_with_staging() {
 check "helper skips gracefully when staging files are absent" \
 	bash -c '
 		set -e
+		HELPER="/opt/claude-code-passthrough/link-credentials.sh"
 		tmp="$(mktemp -d)"
 		trap "rm -rf \"${tmp}\"" EXIT
 		'"$(declare -f run_helper_with_staging)"'
@@ -52,6 +53,7 @@ check "helper skips gracefully when staging files are absent" \
 check "helper errors when staging path is a directory (Docker auto-mkdir)" \
 	bash -c '
 		set -e
+		HELPER="/opt/claude-code-passthrough/link-credentials.sh"
 		tmp="$(mktemp -d)"
 		trap "rm -rf \"${tmp}\"" EXIT
 		'"$(declare -f run_helper_with_staging)"'
