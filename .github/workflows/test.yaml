@@ -10,8 +10,42 @@ on:
   workflow_dispatch:
 
 jobs:
+  shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "Run ShellCheck on feature and test scripts"
+        run: |
+          shellcheck --severity=warning \
+            src/*/install.sh \
+            src/*/scripts/*.sh \
+            test/*/*.sh
+
+  docs-drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "Regenerate feature docs"
+        uses: devcontainers/action@v1
+        with:
+          generate-docs: "true"
+          base-path-to-features: "./src"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: "Fail if generated docs drift from committed"
+        run: |
+          if ! git diff --exit-code -- README.md 'src/**/README.md'; then
+            echo "::error::Generated docs are out of sync with devcontainer-feature.json." \
+                 "Run docs generation locally or let the release workflow update them on main."
+            exit 1
+          fi
+
   test:
     runs-on: ubuntu-latest
+    needs: shellcheck
     strategy:
       matrix:
         feature:

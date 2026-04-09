@@ -1,6 +1,6 @@
 {
 	"id": "claude-code-passthrough",
-	"version": "0.4.0",
+	"version": "0.5.0",
 	"name": "Claude Code (with host credential passthrough)",
 	"description": "Installs Anthropic's Claude Code CLI and bind-mounts the host's ~/.claude/.credentials.json into the container so you don't have to re-authenticate.",
 	"documentationURL": "https://github.com/timcane/devcontainer-features/tree/main/src/claude-code-passthrough",
@@ -13,15 +13,10 @@
 		"llm"
 	],
 	"options": {
-		"version": {
+		"claudeVersion": {
 			"type": "string",
 			"default": "latest",
 			"description": "Version of @anthropic-ai/claude-code to install from npm (e.g. 'latest', '1.2.3')."
-		},
-		"nodeVersion": {
-			"type": "string",
-			"default": "lts",
-			"description": "Informational only. The node feature dependency is pinned to 'lts'; to override, add ghcr.io/devcontainers/features/node yourself with the desired version."
 		},
 		"passthroughHostAuth": {
 			"type": "boolean",
@@ -38,13 +33,13 @@
 		{
 			"type": "bind",
 			"source": "${localEnv:HOME}${localEnv:USERPROFILE}/.claude/.credentials.json",
-			"target": "/usr/local/share/claude-code-passthrough/.credentials.json"
+			"target": "/opt/claude-code-passthrough/.credentials.json"
 		},
 		{
 			"type": "bind",
 			"source": "${localEnv:HOME}${localEnv:USERPROFILE}/.claude.json",
-			"target": "/usr/local/share/claude-code-passthrough/.claude.json"
+			"target": "/opt/claude-code-passthrough/.claude.json"
 		}
 	],
-	"postCreateCommand": "/usr/local/share/claude-code-passthrough/link-credentials.sh"
+	"postCreateCommand": "/opt/claude-code-passthrough/link-credentials.sh"
 }

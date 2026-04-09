@@ -8,12 +8,12 @@
 
 set -euo pipefail
 
-VERSION="${VERSION:-latest}"
+CLAUDE_VERSION="${CLAUDEVERSION:-latest}"
 PASSTHROUGHHOSTAUTH="${PASSTHROUGHHOSTAUTH:-true}"
 REMOTE_USER="${_REMOTE_USER:-root}"
 REMOTE_USER_HOME="${_REMOTE_USER_HOME:-/root}"
 
-STAGING_DIR="/usr/local/share/claude-code-passthrough"
+STAGING_DIR="/opt/claude-code-passthrough"
 SELF_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 log() { echo "[claude-code-passthrough] $*"; }
@@ -31,9 +31,24 @@ require_npm() {
 	fi
 }
 
+validate_version() {
+	# Accept "latest", a semver-ish version (1.2.3, 1.2.3-beta.1, with optional
+	# leading 'v'), or a dist-tag (alphanumerics, dots, dashes, underscores).
+	# Reject anything that could smuggle shell metacharacters into the npm
+	# install argument.
+	case "${CLAUDE_VERSION}" in
+		latest) return 0 ;;
+	esac
+	if ! [[ "${CLAUDE_VERSION}" =~ ^[A-Za-z0-9._-]+$ ]]; then
+		err "ERROR: invalid claudeVersion '${CLAUDE_VERSION}'."
+		err "Expected 'latest', a semver (e.g. 1.2.3), or a dist-tag matching [A-Za-z0-9._-]+."
+		exit 1
+	fi
+}
+
 install_claude_code() {
-	log "installing @anthropic-ai/claude-code@${VERSION}"
-	npm install -g "@anthropic-ai/claude-code@${VERSION}"
+	log "installing @anthropic-ai/claude-code@${CLAUDE_VERSION}"
+	npm install -g "@anthropic-ai/claude-code@${CLAUDE_VERSION}"
 }
 
 # Shim ~/.local/bin/claude → npm binary. Claude's npm build auto-migrates
@@ -55,7 +70,9 @@ shim_local_bin_launcher() {
 		install -d -m 0755 -o "${REMOTE_USER}" -g "${REMOTE_USER}" "${REMOTE_USER_HOME}/.local"
 		install -d -m 0755 -o "${REMOTE_USER}" -g "${REMOTE_USER}" "${local_bin}"
 		ln -sfn "${npm_claude}" "${local_bin}/claude"
-		chown -h "${REMOTE_USER}:${REMOTE_USER}" "${local_bin}/claude" || true
+		if ! chown -h "${REMOTE_USER}:${REMOTE_USER}" "${local_bin}/claude"; then
+			err "WARNING: failed to chown ${local_bin}/claude to ${REMOTE_USER} — symlink ownership may be wrong."
+		fi
 	else
 		install -d -m 0755 "${local_bin}"
 		ln -sfn "${npm_claude}" "${local_bin}/claude"
@@ -88,6 +105,7 @@ prepare_claude_home() {
 }
 
 main() {
+	validate_version
 	require_npm
 	install_claude_code
 	shim_local_bin_launcher

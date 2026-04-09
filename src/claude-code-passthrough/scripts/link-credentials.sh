@@ -51,6 +51,7 @@ MSG
 
 link_credentials() {
 	if [ -d "${CREDS_STAGING}" ]; then
+		# shellcheck disable=SC2088 # literal "~" shown to user in error message
 		bind_mount_is_directory_error "~/.claude/.credentials.json" "${CREDS_STAGING}"
 		exit 1
 	fi
@@ -70,6 +71,7 @@ link_credentials() {
 
 seed_account_state() {
 	if [ -d "${ACCOUNT_STAGING}" ]; then
+		# shellcheck disable=SC2088 # literal "~" shown to user in error message
 		bind_mount_is_directory_error "~/.claude.json" "${ACCOUNT_STAGING}"
 		exit 1
 	fi
