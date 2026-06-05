@@ -22,6 +22,11 @@
 			"type": "boolean",
 			"default": true,
 			"description": "If true, wire the host's Claude Code auth into the container at postCreate: symlink ~/.claude/.credentials.json (so token refreshes flow back to the host) and copy ~/.claude.json (account/onboarding state — copied, not linked, because Claude rewrites it constantly with container-local paths). Both halves are needed together; either alone leaves Claude broken. The bind mounts are always declared; this flag only controls whether link/copy runs."
+		},
+		"passthroughHostConfig": {
+			"type": "boolean",
+			"default": false,
+			"description": "If true, copy a curated subset of the host's global ~/.claude config into the container at postCreate: CLAUDE.md, settings.json, keybindings.json, and the commands/, skills/, and agents/ directories. Copied (not linked), so container edits stay container-local and never mutate the host's real config. Runtime state (projects/, todos/, shell-snapshots/, statsig/) and the separately-handled credential files are deliberately excluded. The bind mount of ~/.claude is always declared; this flag only controls whether the copy runs."
 		}
 	},
 	"dependsOn": {
@@ -39,6 +44,11 @@
 			"type": "bind",
 			"source": "${localEnv:HOME}${localEnv:USERPROFILE}/.claude.json",
 			"target": "/opt/claude-code-passthrough/.claude.json"
+		},
+		{
+			"type": "bind",
+			"source": "${localEnv:HOME}${localEnv:USERPROFILE}/.claude",
+			"target": "/opt/claude-code-passthrough/host-claude-config"
 		}
 	],
 	"postCreateCommand": "/opt/claude-code-passthrough/link-credentials.sh"

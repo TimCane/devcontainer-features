@@ -14,6 +14,26 @@ Both halves are needed together: either alone leaves Claude broken. The
 bind mounts are always declared; `passthroughHostAuth=false` only skips
 the link/copy step at `postCreate`.
 
+## Global config passthrough
+
+Setting `passthroughHostConfig=true` copies a curated subset of your
+host's global `~/.claude` into the container at `postCreate`:
+
+- `CLAUDE.md`, `settings.json`, `keybindings.json`
+- `commands/`, `skills/`, `agents/`
+
+These are **copied, not symlinked**, so edits made inside the container
+stay container-local and never mutate your real host config. Each
+container rebuild re-seeds from the host, so the host remains the source
+of truth.
+
+Deliberately excluded: runtime state (`projects/`, `todos/`,
+`shell-snapshots/`, `statsig/`) that is host-path-specific, and the
+credential files handled separately by `passthroughHostAuth`. The
+`~/.claude` bind mount is always declared; this flag only controls
+whether the copy runs. It is independent of `passthroughHostAuth` — you
+can take config without auth, or the reverse.
+
 ## Requirements
 
 - The host must have authenticated Claude Code at least once before the

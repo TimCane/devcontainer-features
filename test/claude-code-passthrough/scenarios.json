@@ -32,5 +32,13 @@
 		"features": {
 			"claude-code-passthrough": {}
 		}
+	},
+	"with-global-config": {
+		"image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+		"features": {
+			"claude-code-passthrough": {
+				"passthroughHostConfig": true
+			}
+		}
 	}
 }

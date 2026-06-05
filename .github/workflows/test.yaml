@@ -60,7 +60,11 @@ jobs:
         run: npm install -g @devcontainers/cli
 
       - name: "Seed dummy host files for bind mounts"
-        run: mkdir -p ~/.claude && touch ~/.claude/.credentials.json ~/.claude.json
+        run: |
+          mkdir -p ~/.claude/commands
+          touch ~/.claude/.credentials.json ~/.claude.json \
+                ~/.claude/CLAUDE.md ~/.claude/settings.json
+          echo "# example command" > ~/.claude/commands/example.md
 
       - name: "Test ${{ matrix.feature }}"
         run: devcontainer features test --features ${{ matrix.feature }} --base-image mcr.microsoft.com/devcontainers/base:ubuntu .

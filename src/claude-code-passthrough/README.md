@@ -17,6 +17,7 @@ Installs Anthropic's Claude Code CLI and bind-mounts the host's ~/.claude/.crede
 |-----|-----|-----|-----|
 | claudeVersion | Version of @anthropic-ai/claude-code to install from npm (e.g. 'latest', '1.2.3'). | string | latest |
 | passthroughHostAuth | If true, wire the host's Claude Code auth into the container at postCreate: symlink ~/.claude/.credentials.json (so token refreshes flow back to the host) and copy ~/.claude.json (account/onboarding state — copied, not linked, because Claude rewrites it constantly with container-local paths). Both halves are needed together; either alone leaves Claude broken. The bind mounts are always declared; this flag only controls whether link/copy runs. | boolean | true |
+| passthroughHostConfig | If true, copy a curated subset of the host's global ~/.claude config into the container at postCreate: CLAUDE.md, settings.json, keybindings.json, and the commands/, skills/, and agents/ directories. Copied (not linked), so container edits stay container-local and never mutate the host's real config. Runtime state (projects/, todos/, shell-snapshots/, statsig/) and the separately-handled credential files are deliberately excluded. The bind mount of ~/.claude is always declared; this flag only controls whether the copy runs. | boolean | false |
 
 ## How it works
 
@@ -33,6 +34,26 @@ This feature does two things:
 Both halves are needed together: either alone leaves Claude broken. The
 bind mounts are always declared; `passthroughHostAuth=false` only skips
 the link/copy step at `postCreate`.
+
+## Global config passthrough
+
+Setting `passthroughHostConfig=true` copies a curated subset of your
+host's global `~/.claude` into the container at `postCreate`:
+
+- `CLAUDE.md`, `settings.json`, `keybindings.json`
+- `commands/`, `skills/`, `agents/`
+
+These are **copied, not symlinked**, so edits made inside the container
+stay container-local and never mutate your real host config. Each
+container rebuild re-seeds from the host, so the host remains the source
+of truth.
+
+Deliberately excluded: runtime state (`projects/`, `todos/`,
+`shell-snapshots/`, `statsig/`) that is host-path-specific, and the
+credential files handled separately by `passthroughHostAuth`. The
+`~/.claude` bind mount is always declared; this flag only controls
+whether the copy runs. It is independent of `passthroughHostAuth` — you
+can take config without auth, or the reverse.
 
 ## Requirements
 
