@@ -9,7 +9,7 @@
 		"image": "mcr.microsoft.com/devcontainers/base:ubuntu",
 		"features": {
 			"claude-code-passthrough": {
-				"version": "latest"
+				"claudeVersion": "latest"
 			}
 		}
 	},
@@ -18,6 +18,26 @@
 		"features": {
 			"claude-code-passthrough": {
 				"passthroughHostAuth": false
+			}
+		}
+	},
+	"missing-host-file": {
+		"image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+		"features": {
+			"claude-code-passthrough": {}
+		}
+	},
+	"collisions": {
+		"image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+		"features": {
+			"claude-code-passthrough": {}
+		}
+	},
+	"with-global-config": {
+		"image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+		"features": {
+			"claude-code-passthrough": {
+				"passthroughHostConfig": true
 			}
 		}
 	}

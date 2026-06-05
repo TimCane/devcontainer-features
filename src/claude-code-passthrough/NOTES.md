@@ -1,24 +1,3 @@
-
-# Claude Code (with host credential passthrough) (claude-code-passthrough)
-
-Installs Anthropic's Claude Code CLI and bind-mounts the host's ~/.claude/.credentials.json into the container so you don't have to re-authenticate.
-
-## Example Usage
-
-```json
-"features": {
-    "ghcr.io/TimCane/devcontainer-features/claude-code-passthrough:0": {}
-}
-```
-
-## Options
-
-| Options Id | Description | Type | Default Value |
-|-----|-----|-----|-----|
-| claudeVersion | Version of @anthropic-ai/claude-code to install from npm (e.g. 'latest', '1.2.3'). | string | latest |
-| passthroughHostAuth | If true, wire the host's Claude Code auth into the container at postCreate: symlink ~/.claude/.credentials.json (so token refreshes flow back to the host) and copy ~/.claude.json (account/onboarding state — copied, not linked, because Claude rewrites it constantly with container-local paths). Both halves are needed together; either alone leaves Claude broken. The bind mounts are always declared; this flag only controls whether link/copy runs. | boolean | true |
-| passthroughHostConfig | If true, copy a curated subset of the host's global ~/.claude config into the container at postCreate: CLAUDE.md, settings.json, keybindings.json, and the commands/, skills/, and agents/ directories. Copied (not linked), so container edits stay container-local and never mutate the host's real config. Runtime state (projects/, todos/, shell-snapshots/, statsig/) and the separately-handled credential files are deliberately excluded. The bind mount of ~/.claude is always declared; this flag only controls whether the copy runs. | boolean | false |
-
 ## How it works
 
 This feature does two things:
@@ -147,8 +126,3 @@ The bind-mount sources resolve `${localEnv:HOME}` with a fallback to
 `${localEnv:USERPROFILE}` so they work on Windows hosts where `HOME`
 isn't set. If you see mount errors on Windows, confirm that
 `%USERPROFILE%\.claude\.credentials.json` exists.
-
-
----
-
-_Note: This file was auto-generated from the [devcontainer-feature.json](https://github.com/TimCane/devcontainer-features/blob/main/src/claude-code-passthrough/devcontainer-feature.json).  Add additional notes to a `NOTES.md`._
